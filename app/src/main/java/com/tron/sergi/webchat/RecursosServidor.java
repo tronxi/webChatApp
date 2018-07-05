@@ -2,7 +2,7 @@ package com.tron.sergi.webchat;
 
 public class RecursosServidor
 {
-    private static String host = "http://192.168.0.5/webChat/php/";
+    private static String host = "http://192.168.1.5/webChat/php/";
     //private static String host = "http://raspberrytronxi.ddns.net/webChat/php/";
 
     static String abrirConversacion = host + "abrirConversacion.php";
