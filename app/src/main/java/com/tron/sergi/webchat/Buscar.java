@@ -213,11 +213,11 @@ public class Buscar extends AppCompatActivity
         @Override
         protected void onProgressUpdate(String... params)
         {
-            Parcelable state = listaConversaciones.onSaveInstanceState();
+            Parcelable estado = listaConversaciones.onSaveInstanceState();
             ArrayAdapter<String> itemsAdapter =
                     new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, params);
             listaConversaciones.setAdapter(itemsAdapter);
-            listaConversaciones.onRestoreInstanceState(state);
+            listaConversaciones.onRestoreInstanceState(estado);
         }
         @Override
         protected void onPreExecute()
