@@ -1,7 +1,9 @@
 package com.tron.sergi.webchat;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -62,14 +64,77 @@ public class MainActivity extends AppCompatActivity
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( this,  new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
-                String mToken = instanceIdResult.getToken();
-                token = mToken;
-                Log.e("Token",mToken);
+                token = instanceIdResult.getToken();
+                Log.e("Token",token);
+                inicioAutomatico();
             }
         });
     }
 
+    public void inicioAutomatico()
+    {
+        SharedPreferences prefs = getSharedPreferences("login", Context.MODE_PRIVATE);
+        String usuarioGuardado = prefs.getString("Usuario", "");
+        String loginGuardado = prefs.getString("Contra", "");
+        usuario.setText(usuarioGuardado);
+        contraseña.setText(loginGuardado);
+        if(usuario.getText().toString() == null
+                || usuario.getText().toString().equals(""))
+        {
 
+        }
+        else if(contraseña.getText().toString() == null
+                || contraseña.getText().toString().equals(""))
+        {
+
+        }
+        else
+        {
+            StringRequest postRequest = new StringRequest(Request.Method.POST, RecursosServidor.entrarApp,
+                    new Response.Listener<String>()
+                    {
+                        @Override
+                        public void onResponse(String response)
+                        {
+                            if(response.toString().equals("ok"))
+                            {
+                                guardarLoginPreferencias();
+                                Intent intent = new Intent (getApplicationContext(), Conversacion.class);
+                                intent.putExtra("usuario", usuario.getText().toString());
+                                startActivity(intent);
+                            }
+                            else if (response.toString().equals("contraseñaIncorrecta"))
+                            {
+
+                            }
+                            else if (response.toString().equals("noExisteUsuario"))
+                            {
+
+                            }
+                        }
+                    },
+                    new Response.ErrorListener()
+                    {
+                        @Override
+                        public void onErrorResponse(VolleyError error)
+                        {
+                            toast(error.toString());
+                        }
+                    }
+            ) {
+                @Override
+                protected Map<String, String> getParams()
+                {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("usuario", usuario.getText().toString());
+                    params.put("password", contraseña.getText().toString());
+                    params.put("token", token);
+                    return params;
+                }
+            };
+            encolarPeticion(postRequest);
+        }
+    }
 
     public void iniciarSesion(View v)
     {
@@ -93,6 +158,7 @@ public class MainActivity extends AppCompatActivity
                         {
                             if(response.toString().equals("ok"))
                             {
+                                guardarLoginPreferencias();
                                 Intent intent = new Intent (getApplicationContext(), Conversacion.class);
                                 intent.putExtra("usuario", usuario.getText().toString());
                                 startActivity(intent);
@@ -128,6 +194,17 @@ public class MainActivity extends AppCompatActivity
             };
            encolarPeticion(postRequest);
         }
+    }
+
+    private void guardarLoginPreferencias()
+    {
+        SharedPreferences prefs =
+                getSharedPreferences("login",Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("Usuario", usuario.getText().toString());
+        editor.putString("Contra", contraseña.getText().toString());
+        editor.commit();
     }
 
     public void registrarse(View v)
