@@ -109,6 +109,34 @@ public class Conversacion extends AppCompatActivity
 
     public void cerrarSesion(View v)
     {
+        StringRequest postRequest = new StringRequest(Request.Method.POST, RecursosServidor.cerrarSesionApp,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        toast(error.toString());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("usuario", usuario);
+
+                return params;
+            }
+        };
+        encolarPeticion(postRequest);
         Intent intent = new Intent (getApplicationContext(), MainActivity.class);
         startActivity(intent);
     }

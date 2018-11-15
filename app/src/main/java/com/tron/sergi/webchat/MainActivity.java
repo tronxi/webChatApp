@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     private EditText usuario;
     private EditText contraseña;
+    private String token;
 
     Gson gson;
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 String mToken = instanceIdResult.getToken();
+                token = mToken;
                 Log.e("Token",mToken);
             }
         });
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity
                     Map<String, String>  params = new HashMap<String, String>();
                     params.put("usuario", usuario.getText().toString());
                     params.put("password", contraseña.getText().toString());
-
+                    params.put("token", token);
                     return params;
                 }
             };
