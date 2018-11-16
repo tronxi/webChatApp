@@ -33,6 +33,10 @@ public class ConversacionJson
 
     public String getEstado()
     {
+        if(estado.equals("0"))
+        {
+            return "";
+        }
         return estado;
     }
 
