@@ -82,6 +82,10 @@ public class Conversacion extends AppCompatActivity
         }
         actualizarConversaciones.cancel(true);
     }
+    @Override
+    public void onBackPressed() {
+
+    }
 
     @Override
     protected  void onResume()
