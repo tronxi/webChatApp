@@ -1,5 +1,6 @@
 package com.tron.sergi.webchat;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -23,6 +24,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ public class Buscar extends AppCompatActivity
     private String usuario;
     private Gson gson;
     private int estado;
+    private Activity act;
     private ActualizarConversaciones actualizarConversaciones;
 
     private ConversacionJson[] cj;
@@ -47,6 +50,7 @@ public class Buscar extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buscar);
         usuario = getIntent().getExtras().getString("usuario");
+        act = this;
 
         listaConversaciones = (ListView) findViewById(R.id.listaConversaciones);
         listaConversaciones.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -149,7 +153,7 @@ public class Buscar extends AppCompatActivity
         }
     }
 
-    private class ActualizarConversaciones extends AsyncTask<Void, String, Void>
+    private class ActualizarConversaciones extends AsyncTask<Void, ArrayList<Category>, Void>
     {
         @Override
         protected Void doInBackground(Void... params)
@@ -167,14 +171,19 @@ public class Buscar extends AppCompatActivity
                                 {
                                     JSONArray j = new JSONArray(response);
                                     cj = new ConversacionJson[j.length()];
-                                    String [] conversacionesAR = new String[j.length()];
+                                    //String [] conversacionesAR = new String[j.length()];
+                                    ArrayList<Category> category = new ArrayList<Category>();
                                     for(int i = 0; i < j.length(); i++)
                                     {
                                         cj[i] = gson.fromJson(
                                                 j.getJSONObject(i).toString(), ConversacionJson.class);
-                                        conversacionesAR[i] = cj[i].getNombre();
+                                        //conversacionesAR[i] = cj[i].getNombre();
+                                        Category cat = new Category();
+                                        cat.setContacto(cj[i].getNombre());
+                                        cat.setMensaje("");
+                                        category.add(cat);
                                     }
-                                    publishProgress(conversacionesAR);
+                                    publishProgress(category);
 
                                 } catch (JSONException e)
                                 {
@@ -211,11 +220,12 @@ public class Buscar extends AppCompatActivity
         }
 
         @Override
-        protected void onProgressUpdate(String... params)
+        protected void onProgressUpdate(ArrayList<Category>... params)
         {
             Parcelable estado = listaConversaciones.onSaveInstanceState();
-            ArrayAdapter<String> itemsAdapter =
-                    new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, params);
+            //ArrayAdapter<String> itemsAdapter =
+                    //new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, params);
+            AdapterItem itemsAdapter = new AdapterItem(act, params[0]);
             listaConversaciones.setAdapter(itemsAdapter);
             listaConversaciones.onRestoreInstanceState(estado);
         }

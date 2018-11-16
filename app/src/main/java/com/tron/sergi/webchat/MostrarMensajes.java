@@ -1,12 +1,15 @@
 package com.tron.sergi.webchat;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +26,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +36,9 @@ public class MostrarMensajes extends AppCompatActivity
 
     private RequestQueue colaPeticiones;
 
-    private TextView resultado;
-    private ScrollView scroll;
-    private EditText mensajeText;
-
-
+    private ListView mensajesLista;
+    private Activity act;
+    private TextView mensajeText;
     private ActualizarMensajes actualizarMensajes;
 
     private String usuario;
@@ -53,9 +55,9 @@ public class MostrarMensajes extends AppCompatActivity
         volley = SingleVolley.getInstance(getApplicationContext());
         colaPeticiones = volley.getColaPeticiones();
 
-        resultado = (TextView) findViewById(R.id.texto);
-        scroll = (ScrollView) findViewById(R.id.scroll);
-        mensajeText = (EditText) findViewById(R.id.mensajeText);
+        mensajeText = (TextView) findViewById(R.id.mensajeText);
+        mensajesLista = (ListView) findViewById(R.id.mensajesLista);
+        act = this;
 
         gson = new Gson();
 
@@ -93,6 +95,10 @@ public class MostrarMensajes extends AppCompatActivity
 
     public void enviar(View v)
     {
+        if(mensajeText.getText().toString().equals(""))
+        {
+            return ;
+        }
         StringRequest postRequest = new StringRequest(Request.Method.POST, RecursosServidor.enviarMensajeApp,
                 new Response.Listener<String>()
                 {
@@ -131,7 +137,7 @@ public class MostrarMensajes extends AppCompatActivity
                 mensaje, Toast.LENGTH_SHORT).show();
     }
 
-    private class ActualizarMensajes extends AsyncTask<Void, String, Void>
+    private class ActualizarMensajes extends AsyncTask<Void, ArrayList<MensajeCategory>, Void>
     {
         @Override
         protected Void doInBackground(Void... params)
@@ -148,6 +154,7 @@ public class MostrarMensajes extends AppCompatActivity
                                 try
                                 {
                                     JSONArray j = new JSONArray(response);
+                                    ArrayList<MensajeCategory> category = new ArrayList<MensajeCategory>();
                                     for(int i = 0; i < j.length(); i++)
                                     {
                                        Mensaje mensaje = gson.fromJson(
@@ -156,8 +163,13 @@ public class MostrarMensajes extends AppCompatActivity
                                                 mensaje.getNombre() +
                                                         "- " + mensaje.getFecha() +
                                                         ": " + mensaje.getTexto() + "\n";
+                                        MensajeCategory men = new MensajeCategory(usuario);
+                                        men.setFecha(mensaje.getFecha());
+                                        men.setMensaje(mensaje.getTexto());
+                                        men.setNombre(mensaje.getNombre());
+                                        category.add(men);
                                     }
-                                    publishProgress(mensajeTexto);
+                                    publishProgress(category);
 
                                 } catch (JSONException e)
                                 {
@@ -195,11 +207,13 @@ public class MostrarMensajes extends AppCompatActivity
         }
 
         @Override
-        protected void onProgressUpdate(String... params)
+        protected void onProgressUpdate(ArrayList<MensajeCategory>... params)
         {
-            resultado.setText("");
-            resultado.setText( params[0]);
-            scroll.pageScroll(View.FOCUS_DOWN);
+            Parcelable state = mensajesLista.onSaveInstanceState();
+            AdapterItemMensaje itemsAdapter = new AdapterItemMensaje(act, params[0]);
+            mensajesLista.setAdapter(itemsAdapter);
+            mensajesLista.setSelection(mensajesLista.getHeight());
+            //mensajesLista.onRestoreInstanceState(state);
         }
         @Override
         protected void onPreExecute()

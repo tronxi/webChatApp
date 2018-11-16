@@ -70,7 +70,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+    @Override
+    public void onBackPressed() {
 
+    }
     public void inicioAutomatico()
     {
         SharedPreferences prefs = getSharedPreferences("login", Context.MODE_PRIVATE);

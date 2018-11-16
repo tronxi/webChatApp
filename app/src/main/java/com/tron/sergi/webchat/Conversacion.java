@@ -63,7 +63,7 @@ public class Conversacion extends AppCompatActivity
                     colaPeticiones.cancelAll(TAG);
                 }
                 actualizarConversaciones.cancel(true);
-                toast(cj[position].getNombre());
+                //toast(cj[position].getNombre());
                 Intent intent = new Intent (getApplicationContext(), MostrarMensajes.class);
                 intent.putExtra("usuario", usuario);
                 intent.putExtra("idConversacion", cj[position].getIdConversacion());
