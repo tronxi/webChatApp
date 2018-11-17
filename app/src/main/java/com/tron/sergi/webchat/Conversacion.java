@@ -1,5 +1,6 @@
 package com.tron.sergi.webchat;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +10,14 @@ import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -70,6 +74,25 @@ public class Conversacion extends AppCompatActivity
                 startActivity(intent);
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.barra_accion, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.buscar:
+                buscar();
+                return true;
+            case R.id.cerrarSesion:
+                cerrarSesion();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
 
     }
     @Override
@@ -104,8 +127,7 @@ public class Conversacion extends AppCompatActivity
         Toast.makeText(getApplicationContext(),
                 mensaje, Toast.LENGTH_SHORT).show();
     }
-
-    public void buscar(View v)
+    public void buscar()
     {
         if(colaPeticiones != null)
         {
@@ -116,8 +138,7 @@ public class Conversacion extends AppCompatActivity
         intent.putExtra("usuario", usuario);
         startActivity(intent);
     }
-
-    public void cerrarSesion(View v)
+    public void cerrarSesion()
     {
         StringRequest postRequest = new StringRequest(Request.Method.POST, RecursosServidor.cerrarSesionApp,
                 new Response.Listener<String>()

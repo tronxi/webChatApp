@@ -1,13 +1,18 @@
 package com.tron.sergi.webchat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -40,6 +45,7 @@ public class MostrarMensajes extends AppCompatActivity
     private Activity act;
     private TextView mensajeText;
     private ActualizarMensajes actualizarMensajes;
+    private int tamAnterior;
 
     private String usuario;
     private String idConversacion;
@@ -58,7 +64,7 @@ public class MostrarMensajes extends AppCompatActivity
         mensajeText = (TextView) findViewById(R.id.mensajeText);
         mensajesLista = (ListView) findViewById(R.id.mensajesLista);
         act = this;
-
+        tamAnterior = -1;
         gson = new Gson();
 
         usuario = getIntent().getExtras().getString("usuario");
@@ -66,6 +72,7 @@ public class MostrarMensajes extends AppCompatActivity
 
         actualizarMensajes = new ActualizarMensajes();
         actualizarMensajes.execute();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
 
@@ -210,10 +217,22 @@ public class MostrarMensajes extends AppCompatActivity
         protected void onProgressUpdate(ArrayList<MensajeCategory>... params)
         {
             Parcelable state = mensajesLista.onSaveInstanceState();
+            int tam = params[0].size();
             AdapterItemMensaje itemsAdapter = new AdapterItemMensaje(act, params[0]);
             mensajesLista.setAdapter(itemsAdapter);
-            mensajesLista.setSelection(mensajesLista.getHeight());
-            //mensajesLista.onRestoreInstanceState(state);
+            mensajesLista.onRestoreInstanceState(state);
+
+            if(tam > tamAnterior)
+            {
+                mensajesLista.setSelection(mensajesLista.getHeight());
+            }
+            else
+            {
+                mensajesLista.onRestoreInstanceState(state);
+            }
+            tamAnterior = tam;
+
+
         }
         @Override
         protected void onPreExecute()

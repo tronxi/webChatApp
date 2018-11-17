@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">webChat</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_buscar">Buscar</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
 </resources>

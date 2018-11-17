@@ -21,7 +21,9 @@
         <activity android:name=".MostrarMensajes" />
         <activity android:name=".Registro" />
         <activity android:name=".Conversacion" />
-        <activity android:name=".Buscar"></activity>
+        <activity android:name=".Buscar" />
+
+
         <service
             android:name=".FirebaseService"
             android:stopWithTask="false">
@@ -29,12 +31,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
+
     </application>
-
-
 
 </manifest>
